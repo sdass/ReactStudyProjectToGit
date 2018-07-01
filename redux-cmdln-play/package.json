@@ -4,10 +4,13 @@
   "private": true,
   "devtool": "#source-map",
   "dependencies": {
+    "axios": "^0.18.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-scripts": "0.9.5",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {
