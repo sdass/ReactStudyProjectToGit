@@ -8,6 +8,7 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import logger from 'redux-logger';
 import thunk from 'redux-thunk'; //thunk is a redux middleware
 import axios from "axios";//xhrRequest lib
+import promise from 'redux-promise-middleware';
 
 const apiURL = "https://api.publicapis.org/categories";
 
@@ -33,7 +34,7 @@ const myown_errorMiddleware = (store)=>(next)=>(action)=>{
        console.error('CCCRRRAAAASSSSHHHH! ' + e);
      }
  }
-const myMiddleware = applyMiddleware(thunk, logger, logger_myownMiddleware, myown_errorMiddleware); //to add any number of middleware pass as args.
+const myMiddleware = applyMiddleware(thunk, promise(), logger, logger_myownMiddleware, myown_errorMiddleware); //to add any number of middleware pass as args.
 
 const userReducer = (state=defaults, action) => {
   //console.log('userReducer()... called');
@@ -69,13 +70,13 @@ const initialState = { fetching: false, fetched: false, data:{}, error: null}
 const reducer2 = function(state=initialState, action){
   //console.log('reducer called...');
   switch(action.type){
-   case "FETCH_DATA_START":
+   case "FETCH_DATA_START", "FETCH_DATA_PENDING":
      state = {...state, fetching: true};
   break;    
-  case "RECEIVED_DATA":
+  case "RECEIVED_DATA", "FETCH_DATA_FULFILLED":
   state = {...state, fetching: false, fetched: true, data: action.payload}
   break;    
-  case "DATA_FETCH_ERROR":
+  case "DATA_FETCH_ERROR", "FETCH_DATA_REJECTED":
   state = {...state, fetching: false, error: action.payload};
   break;    
   
@@ -113,14 +114,20 @@ const store = createStore(singlepointReducer, {}, myMiddleware); //(singlepointR
      
 store.subscribe( () => {console.log('store changed...', store.getState())} );
 
+store.dispatch({
+  type: "FETCH_DATA",
+  payload: axios.get(apiURL+'/fdsfdfs')
+} ); //using promise with[out] thunk
+
+/* using thunk only.
 store.dispatch((dispatcher2)=>{ 
-  /*
+  
   //console.log('Inside new way . . .1 ');
-  dispatcher2({type: 'A'}); 
-  console.log('Inside new way . . .2');
+  //dispatcher2({type: 'A'}); 
+  //console.log('Inside new way . . .2');
     // do something asynch
-    dispatcher2({type: "CHANGE_NAME"}); //thunk middleware allow multiple call to dispatcher2
-    */
+   // dispatcher2({type: "CHANGE_NAME"}); //thunk middleware allow multiple call to dispatcher2
+    
    dispatcher2({type: 'FETCH_DATA_START'}); // UI will show loading spinner
    //do asynch call
    axios.get(apiURL)
@@ -131,6 +138,7 @@ store.dispatch((dispatcher2)=>{
      dispatcher2({type: 'DATA_FETCH_ERROR', payload: err})
    })
 });
+*/
 
 //store.dispatch({ type: "CHANGE_NAME", payload: 'Davis Donald' });
 //store.dispatch({ type: "ERROR_R", payload: -5 }); //errorHandler middlewre will catch

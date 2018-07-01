@@ -9,3 +9,5 @@ npm install --save redux
 
 4th commit based upon https://www.youtube.com/watch?v=Td-2D-_7Y2E
 for asynchronous call to rest api endpoint (https://api.publicapis.org/categories) with thunk middleware
+
+5th commit based upon 4th commit's youtube video 2nd part. Using promise. Cleaner code
