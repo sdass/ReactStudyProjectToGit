@@ -4,8 +4,42 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import './index.css';
-import {createStore} from 'redux';
+import {createStore, combineReducers} from 'redux';
 
+const defaults = { name: 'subra', hobby: 'chess', age: 32 };
+const userReducer = (state=defaults, action) => {
+  //console.log('userReducer()... called');
+  switch(action.type){
+    case "CHANGE_NAME": {
+      state = {...state, name: action.payload}
+     // state.name = action.payload;
+      //console.log('defaults' + JSON.stringify(defaults));
+      //console.log('state' + JSON.stringify(state));
+      break;
+    }
+    case "CHANGE_HOBBY": {
+      //state.hobby = action.payload;
+      state = {...state, hobby: action.payload}
+      break;
+    }
+    case "CHANGE_USER": {
+      //state.name = action.payload.name; state.age = action.payload.age; state.hobby = action.payload.hobby;
+      state = {...state, name: action.payload.name, hobby: action.payload.hobby, age: action.payload.age};
+      break;
+    }        
+  }
+  return state;
+};
+
+const todoListReducer = (state=[], actions) => { //state={}
+  //console.log('todoListReducer()... called'); //must always return something|state
+  return state;
+};
+
+const singlepointReducer = combineReducers({
+  user: userReducer, //what state : what reducer to handle
+  listTodo: todoListReducer,
+});
 
 const reducer = function(state, action){
   console.log('reducer called...');
@@ -20,29 +54,19 @@ const reducer = function(state, action){
   case "DEC10":
      //state = state -10;
      state = state -action.payload;
-  break;  
-   
+  break;    
   
   }
-  return state;
+  return state; //imprtant to change the state
 }
 
-const store = createStore(reducer, 3) //initial state=4 .state holder
+const store = createStore(singlepointReducer); //,  initial state={} 
+     
 store.subscribe( () => {console.log('store changed...', store.getState())} );
 
-store.dispatch({ 
-       
-    type: "2X", payload: 2,
-    type: "DEC10", payload: -10, 
-    type: "INC", payload: 99  //last one reached
-});
-
-store.dispatch({  //2nd emitted event
-  type: "2X", payload: 2,
-});
-
-store.dispatch({ type: "DEC10", payload: -5, });
-
+store.dispatch({ type: "CHANGE_NAME", payload: 'Davis Donald' });
+store.dispatch({ type: "CHANGE_HOBBY", payload: 'hacking'});
+store.dispatch({ type: "CHANGE_USER", payload: {name: 'X45', hobby: 'U78r', age: 451} });
 
 /*
 ReactDOM.render(
